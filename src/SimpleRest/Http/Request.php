@@ -24,6 +24,10 @@ class Request implements ServerRequestInterface
         $this->content = $content;
     }
     
+    /**
+     * Create new {static} from globals
+     * @return \static
+     */
     public static function createFromGlobals()
     {
         return new static(

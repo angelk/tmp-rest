@@ -3,7 +3,7 @@
 namespace SimpleRest\Router;
 
 /**
- * Description of Route
+ * Route
  *
  * @author po_taka <angel.koilov@gmail.com>
  */
@@ -23,22 +23,38 @@ class Route
         $this->method = $method;
     }
     
-    function getPath()
+    /**
+     * URL matching the route
+     * @return string
+     */
+    public function getPath()
     {
         return $this->path;
     }
 
-    function getController()
+    /**
+     * Return controller class name
+     * @return string
+     */
+    public function getController()
     {
         return $this->controller;
     }
 
-    function getAction()
+    /**
+     * Return controller method
+     * @return string
+     */
+    public function getAction()
     {
         return $this->action;
     }
 
-    function getMethod()
+    /**
+     * Return request method
+     * @return string
+     */
+    public function getMethod()
     {
         return $this->method;
     }

@@ -13,6 +13,7 @@ class Response implements ResponseInterface
 {
     private $body;
     private $statusCode;
+    private $headers = [];
     
     /**
      * Set response body
@@ -47,9 +48,22 @@ class Response implements ResponseInterface
         throw new \SimpleRest\Exception\Exception('Not implemented');
     }
 
+    /**
+     * @param string $name header name
+     * @param string $value header value
+     */
+    public function addHeader($name, $value)
+    {
+        if (!isset($this->headers[$name])) {
+            $this->headers[$name] = [];
+        }
+        
+        $this->headers[$name][] = $value;
+    }
+    
     public function getHeaders()
     {
-        throw new \SimpleRest\Exception\Exception('Not implemented');
+        return $this->headers;
     }
 
     public function getProtocolVersion()

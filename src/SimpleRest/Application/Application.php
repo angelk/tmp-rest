@@ -2,6 +2,9 @@
 
 namespace SimpleRest\Application;
 
+use SimpleRest\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+
 /**
  * Application
  *
@@ -11,47 +14,61 @@ class Application
 {
     public function run($request)
     {
-        $this->initErrorHandler();
-
         try {
+            $this->initErrorHandler();
+            
             $router = new \SimpleRest\Router\Router();
-            $router->addRoute(
-                new \SimpleRest\Router\Route(
-                    '/',
-                    \SimpleRest\Controller\NewsController::class,
-                    'indexAction',
-                    'GET'
-                )
-            );
+            $router->addRoutes(require __DIR__ . '/../../../config/routes.php');
 
-            $machedRoute = $router->matchRoute($request);
+            $machedRouteData = $router->matchRoute($request);
+            $machedRoute = $machedRouteData['route'];
+            
+            $container = new \SimpleRest\DependencyInjection\Container();
             
             $controllerClass = $machedRoute->getController();
             $controller = new $controllerClass();
+            
+            if ($controller instanceof \SimpleRest\DependencyInjection\ContainerAwareInterface) {
+                $controller->setContainer($container);
+            }
+            
             $controllerMethod = $machedRoute->getAction();
             $response = call_user_func_array(
                 [$controller, $controllerMethod],
-                [] // add parameters from oruter
+                $machedRouteData['routeParameters']
             );
             
-            if (! $response instanceof \Psr\Http\Message\ResponseInterface) {
+            if (! $response instanceof ResponseInterface) {
                 throw new \SimpleRest\Exception\Exception("Controller should return response object");
             }
             
-            http_response_code($response->getStatusCode());
-            echo $response->getBody();
+            $this->sendResponse($response);
         } catch (\SimpleRest\Exception\Exception $e) {
-            header('Content-Type: application/json');
-            http_response_code(500);
+            $response = new Response();
+            $response->setStatusCode(500);
+            $response->addHeader('Content-Type', 'application/json');
+            
             $jsonData = [
                 'error' => [
                     'msg' => $e->getMessage()
                 ],
             ];
             
-            echo json_encode($jsonData);
+            $response->setBody(json_encode($jsonData));
+            $this->sendResponse($response);
         }
     }
+    
+    protected function sendResponse(ResponseInterface $response)
+    {
+        http_response_code($response->getStatusCode());
+        foreach ($response->getHeaders() as $headerName => $headerValues) {
+            $headerData = $headerName . ': ' . implode(',', $headerValues);
+            header($headerData);
+        }
+        echo $response->getBody();
+    }
+    
     
     public function initErrorHandler()
     {

@@ -11,14 +11,38 @@ class Router
      */
     private $routes;
     
+    public function addRoutes(array $routes)
+    {
+        foreach ($routes as $route) {
+            $this->addRoute($route);
+        }
+    }
+    
+    /**
+     * @param Route|Array $route
+     * @throws \SimpleRest\Exception\Exception
+     */
     public function addRoute($route)
     {
-        $this->routes[] = $route;
+        if ($route instanceof Route) {
+            $this->routes[] = $route;
+        } elseif (is_array($route)) {
+            $routeObject = new Route(
+                $route['path'],
+                $route['controller'],
+                $route['action'],
+                $route['method']
+            );
+            
+            $this->routes[] = $routeObject;
+        } else {
+            throw new \SimpleRest\Exception\Exception("unknown type");
+        }
     }
     
     /**
      * @param ServerRequestInterface $request
-     * @return Route
+     * @return Array
      */
     public function matchRoute(ServerRequestInterface $request)
     {
@@ -29,9 +53,16 @@ class Router
             $requiredPath = '/';
         }
         
+        $routeParams = [];
         foreach ($this->routes as $route) {
-            if ($route->getPath() === $requiredPath && $request->getMethod() === $route->getMethod()) {
-                return $route;
+            if ($route->getMethod() === $request->getMethod()) {
+                if (preg_match($route->getPath(), $requiredPath, $routeParams)) {
+                    array_shift($routeParams);
+                    return [
+                        'route' => $route,
+                        'routeParameters' => $routeParams,
+                    ];
+                }
             }
         }
         

@@ -24,6 +24,7 @@ class Application
             $machedRoute = $machedRouteData['route'];
             
             $container = new \SimpleRest\DependencyInjection\Container();
+            $container->add('request', $request);
             
             $controllerClass = $machedRoute->getController();
             $controller = new $controllerClass();
@@ -31,6 +32,11 @@ class Application
             if ($controller instanceof \SimpleRest\DependencyInjection\ContainerAwareInterface) {
                 $controller->setContainer($container);
             }
+            
+            $container->add('db', $this->initDb());
+            $container->add('newsQuery', function () use ($container) {
+                return new \SimpleRest\Orm\News\Query($container->get('db'));
+            });
             
             $controllerMethod = $machedRoute->getAction();
             $response = call_user_func_array(
@@ -74,5 +80,17 @@ class Application
     {
         $handler = new \SimpleRest\Error\ErrorHandler();
         $handler->register();
+    }
+    
+    public function initDb()
+    {
+        $dbSettings = require __DIR__ . '/../../../config/db.php';
+        $pdo = new \PDO(
+            "mysql:dbname={$dbSettings['database']};host={$dbSettings['host']}",
+            $dbSettings['user'],
+            $dbSettings['password']
+        );
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        return $pdo;
     }
 }

@@ -8,7 +8,13 @@ return [
         'method' => 'GET',
     ],
     [
-        'path' => '~^/(?P<id>[0-9]+)$~',
+        'path' => '~^/([0-9]+)$~',
+        'controller' => \SimpleRest\Controller\NewsController::class,
+        'action' => 'getAction',
+        'method' => 'GET',
+    ],
+    [
+        'path' => '~^/$~',
         'controller' => \SimpleRest\Controller\NewsController::class,
         'action' => 'postAction',
         'method' => 'POST',

@@ -18,17 +18,53 @@ class NewsController implements ContainerAwareInterface
     
     public function indexAction()
     {
-        return $this->getResponseJson(['method' => ['index']]);
+        $query = $this->get('newsQuery');
+        /* @var $query \SimpleRest\Orm\News\Query */
+        $limit = 10;
+        $newsQuery = $query->createQuery();
+        $newsQuery->setLimit($limit);
+        $newsFound = $newsQuery->find(false);
+        return $this->getResponseJson(
+            [
+                'items' => $newsFound,
+                'meta' => [
+                    'perPage' => $limit,
+                ],
+            ]
+        );
+    }
+    
+    public function getAction($id)
+    {
+        $query = $this->get('newsQuery');
+        $newsQuery = $query->createQuery();
+        $news = $newsQuery->get($id);
+        return $this->getResponseJson($news);
     }
     
     public function postAction()
     {
-        return $this->getResponseJson(['method' => ['post']]);
+        $request = $this->get('request');
+        /* @var $request \Psr\Http\Message\ServerRequestInterface */
+        $parsedRequestBody = $request->getParsedBody();
+        $news = new \SimpleRest\Orm\News\News(
+            null,
+            $parsedRequestBody['title'],
+            new \DateTime($parsedRequestBody['date']),
+            $parsedRequestBody['text']
+        );
+        $query = $this->get('newsQuery');
+        $query->save($news);
+        
+        return $this->getResponseJson([$request->getParsedBody()]);
     }
     
     public function deleteAction($id)
     {
-        return $this->getResponseJson(['method' => ['delete', $id]]);
+        $query = $this->get('newsQuery');
+        /* @var $query \SimpleRest\Orm\News\Query */
+        $query->delete($id);
+        return $this->getResponseJson(['status' => 'ok']);
     }
     
     protected function getResponseJson(array $data)

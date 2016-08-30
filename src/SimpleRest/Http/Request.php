@@ -50,7 +50,7 @@ class Request implements ServerRequestInterface
 
     public function getBody()
     {
-        throw new \RuntimeException('Not implemented');
+        return new \SimpleRest\Http\Message\Stream($this->content);
     }
 
     public function getCookieParams()
@@ -80,7 +80,7 @@ class Request implements ServerRequestInterface
 
     public function getParsedBody()
     {
-        throw new \RuntimeException('Not implemented');
+        return \json_decode((string) $this->getBody(), true);
     }
 
     public function getProtocolVersion()

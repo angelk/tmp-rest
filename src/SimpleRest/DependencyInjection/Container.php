@@ -18,6 +18,10 @@ class Container
     
     public function get($key)
     {
+        if (is_callable($this->services[$key])) {
+            $callable = $this->services[$key];
+            $this->services[$key] = $callable();
+        }
         return $this->services[$key];
     }
 }

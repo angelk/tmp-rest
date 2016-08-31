@@ -26,6 +26,8 @@ class Application
             $container = new \SimpleRest\DependencyInjection\Container();
             $container->add('request', $request);
             
+            $container->add('newsValidator', new \SimpleRest\Validator\NewsValidator());
+            
             $controllerClass = $machedRoute->getController();
             $controller = new $controllerClass();
             

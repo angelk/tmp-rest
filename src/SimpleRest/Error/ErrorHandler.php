@@ -12,9 +12,9 @@ use SimpleRest\Exception\Exception;
 class ErrorHandler
 {
 
-    public function handlerError($erorNo, $errorStr)
+    public function handlerError($erorNo, $errorStr, $errFile)
     {
-        throw new Exception("{$errorStr} #{$erorNo}");
+        throw new Exception("{$errorStr} #{$erorNo}" . PHP_EOL . $errFile);
     }
 
     public function register()

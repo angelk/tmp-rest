@@ -3,6 +3,7 @@
 namespace SimpleRest\Orm\News;
 
 use PDO;
+use SimpleRest\Validator\ValidatorInterface;
 
 /**
  * Query
@@ -133,8 +134,15 @@ class Query
         );
     }
     
-    public function save(News $news)
+    public function save(News $news, ValidatorInterface $validator)
     {
+        if (false === $validator->validate($news)) {
+            $error = $validator->getErrors();
+            $exception = new \SimpleRest\Validator\ValidationException("Validation failed");
+            $exception->setErrors($error);
+            throw $exception;
+        }
+        
         if ($news->getId()) {
             return $this->update($news);
         }

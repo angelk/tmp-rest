@@ -59,7 +59,16 @@ class NewsController implements ContainerAwareInterface
         );
         $query = $this->get('newsQuery');
         /* @var $query \SimpleRest\Orm\News\Query */
-        $query->save($news);
+        try {
+            $query->save($news, $this->get('newsValidator'));
+        } catch (\SimpleRest\Validator\ValidationException $e) {
+            return $this->createResponseJson(
+                [
+                    'status' => 'fail',
+                    'errors' => $e->getErrors(),
+                ]
+            );
+        }
         
         return $this->createResponseJson(['status' => 'ok']);
     }
@@ -77,7 +86,16 @@ class NewsController implements ContainerAwareInterface
         );
         $query = $this->get('newsQuery');
         /* @var $query \SimpleRest\Orm\News\Query */
-        $query->save($news);
+        try {
+            $query->save($news, $this->get('newsValidator'));
+        } catch (\SimpleRest\Validator\ValidationException $e) {
+            return $this->createResponseJson(
+                [
+                    'status' => 'fail',
+                    'errors' => $e->getErrors(),
+                ]
+            );
+        }
         
         return $this->createResponseJson(
             [

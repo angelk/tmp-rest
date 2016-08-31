@@ -2,6 +2,8 @@
     "name": "demoproject/demo",
     "description": "demo project",
     "require": {
+        "php": "^7.0",
+        "ext-mbstring": "*",
         "psr/http-message" : "~1.0.1"
     },
     "require-dev": {

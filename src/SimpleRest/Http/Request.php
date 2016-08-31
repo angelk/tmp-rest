@@ -40,7 +40,11 @@ class Request implements ServerRequestInterface
 
     public function getAttribute($name, $default = null)
     {
-        throw new \RuntimeException('Not implemented');
+        if (isset($this->query[$name])) {
+            return $this->query[$name];
+        }
+        
+        return $default;
     }
 
     public function getAttributes()

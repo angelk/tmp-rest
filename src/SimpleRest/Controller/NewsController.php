@@ -20,11 +20,14 @@ class NewsController implements ContainerAwareInterface
     {
         $query = $this->get('newsQuery');
         /* @var $query \SimpleRest\Orm\News\Query */
+        $request = $this->get('request');
+        /* @var $request \Psr\Http\Message\ServerRequestInterface */
         $limit = 10;
         $newsQuery = $query->createQuery();
         $newsQuery->setLimit($limit);
+        $newsQuery->setOffset($request->getAttribute('offset', 0));
         $newsFound = $newsQuery->find(false);
-        return $this->getResponseJson(
+        return $this->createResponseJson(
             [
                 'items' => $newsFound,
                 'meta' => [
@@ -37,9 +40,28 @@ class NewsController implements ContainerAwareInterface
     public function getAction($id)
     {
         $query = $this->get('newsQuery');
+        /* @var $query \SimpleRest\Orm\News\Query */
         $newsQuery = $query->createQuery();
         $news = $newsQuery->get($id);
-        return $this->getResponseJson($news);
+        return $this->createResponseJson($news->toArray());
+    }
+    
+    public function putAction($id)
+    {
+        $request = $this->get('request');
+        /* @var $request \Psr\Http\Message\ServerRequestInterface */
+        $parsedRequestBody = $request->getParsedBody();
+        $news = new \SimpleRest\Orm\News\News(
+            $id,
+            $parsedRequestBody['title'],
+            new \DateTime($parsedRequestBody['date']),
+            $parsedRequestBody['text']
+        );
+        $query = $this->get('newsQuery');
+        /* @var $query \SimpleRest\Orm\News\Query */
+        $query->save($news);
+        
+        return $this->createResponseJson(['status' => 'ok']);
     }
     
     public function postAction()
@@ -54,9 +76,15 @@ class NewsController implements ContainerAwareInterface
             $parsedRequestBody['text']
         );
         $query = $this->get('newsQuery');
+        /* @var $query \SimpleRest\Orm\News\Query */
         $query->save($news);
         
-        return $this->getResponseJson([$request->getParsedBody()]);
+        return $this->createResponseJson(
+            [
+                'status' => 'ok',
+                'news' => $news->toArray(),
+            ]
+        );
     }
     
     public function deleteAction($id)
@@ -64,10 +92,15 @@ class NewsController implements ContainerAwareInterface
         $query = $this->get('newsQuery');
         /* @var $query \SimpleRest\Orm\News\Query */
         $query->delete($id);
-        return $this->getResponseJson(['status' => 'ok']);
+        return $this->createResponseJson(['status' => 'ok']);
     }
     
-    protected function getResponseJson(array $data)
+    /**
+     * Create \Psr\Http\Message\ResponseInterface for json from array
+     * @param array $data
+     * @return Response
+     */
+    protected function createResponseJson(array $data)
     {
         $response = new Response();
         $dataJson = json_encode($data);

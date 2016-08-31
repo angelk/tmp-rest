@@ -22,6 +22,12 @@ return [
     [
         'path' => '~^/([0-9]+)$~',
         'controller' => \SimpleRest\Controller\NewsController::class,
+        'action' => 'putAction',
+        'method' => 'PUT',
+    ],
+    [
+        'path' => '~^/([0-9]+)$~',
+        'controller' => \SimpleRest\Controller\NewsController::class,
         'action' => 'deleteAction',
         'method' => 'DELETE',
     ],

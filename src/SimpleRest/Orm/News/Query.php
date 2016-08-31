@@ -16,10 +16,18 @@ class Query
      */
     private $pdo;
     
+    /**
+     * Query limit
+     * @var int
+     */
     private $limit = 10;
-    
-    private $orders = [];
 
+    /**
+     * Query offset
+     * @var int
+     */
+    private $offset = 0;
+    
     private $fields = [
         'id',
         'title',
@@ -27,24 +35,18 @@ class Query
         'text',
     ];
     
-    private $orderFields = [
-        'id',
-        'title',
-    ];
-    
-    private $orderDirections = [
-        'asc',
-        'desc',
-    ];
-
     const TABLE = 'news';
     
+    /**
+     * @param PDO $pdo
+     */
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
     }
     
     /**
+     * create new query from this one
      * @return \static
      */
     public function createQuery()
@@ -52,35 +54,30 @@ class Query
         return new static($this->pdo);
     }
     
+    /**
+     * Apply limit to the query
+     * @param int $limit
+     */
     public function setLimit($limit)
     {
         $this->limit = (int) $limit;
     }
     
-    public function addOrder($field, $direction = 'asc')
-    {
-        if (!in_array($field, $this->orderFields)) {
-            // @TODO throw specific exception
-            throw new \Exception("Forbidden order");
-        }
-        
-        if (!in_array($direction, $this->orderDirections)) {
-            // @TODO throw specific exception
-            throw new \Exception("Forbidden order direction");
-        }
-        
-        
-        $this->orders[] = [
-            'field' => $field,
-            'direction' => $direction,
-        ];
-    }
-
+    /**
+     * set query offset
+     * @param int $offset
+     */
     public function setOffset($offset)
     {
-        $this->offset = $offset;
+        $this->offset = (int) $offset;
     }
 
+    /**
+     * Get result from query
+     * @param type $hidrate
+     * @return News[]|Array
+     * @throws \RuntimeException
+     */
     public function find($hidrate = true)
     {
         $stm = $this->pdo->prepare("
@@ -91,10 +88,11 @@ class Query
             ORDER BY
                 id
             LIMIT
-                :limit
+                :offset, :limit
         ");
         
         $stm->bindValue(':limit', $this->limit, PDO::PARAM_INT);
+        $stm->bindValue(':offset', $this->offset, PDO::PARAM_INT);
         $stm->execute();
         $returnData = [];
         if ($hidrate) {
@@ -105,6 +103,11 @@ class Query
         return $returnData;
     }
 
+    /**
+     * Fin News by id
+     * @param int $id
+     * @return News
+     */
     public function get($id)
     {
         $stm = $this->pdo->prepare("
@@ -118,8 +121,16 @@ class Query
         
         $stm->bindValue(':id', $id, PDO::PARAM_INT);
         $stm->execute();
-        // @TODO throw exception if empty
-        return $stm->fetch(PDO::FETCH_ASSOC);
+        if ($stm->rowCount() === 0) {
+            throw new \RuntimeException("Can't find news for the given id");
+        }
+        $newsData = $stm->fetch(PDO::FETCH_ASSOC);
+        return new News(
+            $newsData['id'],
+            $newsData['title'],
+            new \DateTime($newsData['date']),
+            $newsData['text']
+        );
     }
     
     public function save(News $news)
@@ -131,23 +142,57 @@ class Query
         return $this->insert($news);
     }
     
-    protected function insert($news)
+    /**
+     * Insert given news in db
+     * @param \SimpleRest\Orm\News\News $news
+     * @return boolean
+     */
+    protected function insert(News $news)
     {
         $stm = $this->pdo->prepare("
             INSERT INTO
-                " . static::TABLE . " (title)
-            VALUES (:title)
+                " . static::TABLE . " (" . implode(', ', $this->fields) . ")
+            VALUES (null, :title, :date, :text)
         ");
         
         $stm->bindValue('title', $news->getTitle());
+        $stm->bindValue('date', $news->getDate()->format('Y-m-d'));
+        $stm->bindValue('text', $news->getText());
         $stm->execute();
+        $news->setId($this->pdo->lastInsertId());
+        return true;
     }
     
-    protected function update($news)
+    /**
+     * Update db record for given news
+     * @param \SimpleRest\Orm\News\News $news
+     * @return boolean
+     */
+    protected function update(News $news)
     {
-        throw new \RuntimeException('not implemeted');
+        $stm = $this->pdo->prepare("
+            UPDATE
+                " . static::TABLE . "
+            SET
+                title = :title,
+                date = :date,
+                text = :text
+            WHERE
+                id = :id
+        ");
+        
+        $stm->bindValue('id', $news->getId(), PDO::PARAM_INT);
+        $stm->bindValue('title', $news->getTitle());
+        $stm->bindValue('date', $news->getDate()->format('Y-m-d'));
+        $stm->bindValue('text', $news->getText());
+        $stm->execute();
+        return true;
     }
     
+    /**
+     * Delete news with given id
+     * @param int $id
+     */
     public function delete($id)
     {
         $stm = $this->pdo->prepare("

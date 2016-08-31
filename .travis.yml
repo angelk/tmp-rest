@@ -1,0 +1,16 @@
+language: php
+php:
+  - 7.0
+
+before_script:
+
+script:
+    - composer install -d Test/codeSniffer/
+    - Test/codeSniffer/vendor/bin/phpcs --standard=Test/codeSniffer/phpcs.xml src/
+    - composer install
+    - vendor/bin/phpunit -c Test/phpunit/phpunit.xml
+
+notifications:
+    on_success: never
+    on_failure: always
+    on_change: always

@@ -1,3 +1,8 @@
 /config/db.php
 
+/composer.lock
+
 /vendor
+/Test/codeSniffer/vendor
+/Test/phpunit/codeCoverageLog
+/Test/codeSniffer/vendor

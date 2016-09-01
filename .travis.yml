@@ -12,6 +12,7 @@ script:
     - composer install -d Test/codeSniffer/
     - Test/codeSniffer/vendor/bin/phpcs --standard=Test/codeSniffer/phpcs.xml src/
     - composer install
+    - cp config/db.travis.php config/db.php
     - vendor/bin/phpunit -c Test/phpunit/phpunit.xml
     - composer install -d Test/behat
     - php -S localhost:8001 -t web/ > /dev/null &

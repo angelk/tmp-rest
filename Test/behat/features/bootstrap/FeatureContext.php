@@ -2,8 +2,6 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
-use Behat\Gherkin\Node\PyStringNode;
-use Behat\Gherkin\Node\TableNode;
 
 /**
  * Defines application features from the specific context.
@@ -49,6 +47,15 @@ class FeatureContext implements Context, SnippetAcceptingContext
         if (!isset($pageData['meta']['perPage'])) {
             throw new \Exception("Index should provide information for items per page");
         }
+        
+        if (!isset($pageData['items'])) {
+            throw new \Exception("Index should provide 'items' data");
+        }
+        
+        // db is in know state
+        // get 1st news and test if all fields are filled
+        $news = $pageData['items'][0];
+        $this->assertGivenArrayIsNews($news);
     }
     
     protected function assertIsJson($data)
@@ -59,6 +66,17 @@ class FeatureContext implements Context, SnippetAcceptingContext
         }
     }
     
+    protected function assertGivenArrayIsNews($data)
+    {
+        $expectedNewskeys = ['id', 'title', 'date', 'text'];
+        foreach ($expectedNewskeys as $key) {
+            if (false === array_key_exists($expectedNewskeys, $data)) {
+                throw new \Excepion("Expected to find {$key} in news data");
+            }
+        }
+    }
+
+
     protected function assertStatusCodeIs2xx(Behat\Mink\Driver\DriverInterface $driver)
     {
         if ($driver->getStatusCode() < 200 || $driver->getStatusCode() >= 300) {

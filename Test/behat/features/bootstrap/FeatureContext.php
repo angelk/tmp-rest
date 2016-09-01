@@ -70,7 +70,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
     {
         $expectedNewskeys = ['id', 'title', 'date', 'text'];
         foreach ($expectedNewskeys as $key) {
-            if (false === array_key_exists($expectedNewskeys, $data)) {
+            if (false === array_key_exists($key, $data)) {
                 throw new \Excepion("Expected to find {$key} in news data");
             }
         }

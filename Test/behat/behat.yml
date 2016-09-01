@@ -1,0 +1,12 @@
+default:
+    extensions:
+      Ptbfw\Initializer\Extension:
+            resetters:
+                restInitialDbState:
+                    type: 'mysql'
+                    host: 'localhost'
+                    user: 'travis'
+                    password: ''
+                    database: 'tmp_rest'
+                    directory: 'restInitialDbState'
+                    init_command: 'SET NAMES "UTF8"'

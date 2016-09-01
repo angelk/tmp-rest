@@ -2,14 +2,20 @@ language: php
 php:
   - 7.0
 
+services:
+  - mysql
+
 before_script:
+  - mysql -e 'create database tmp_rest;'
 
 script:
     - composer install -d Test/codeSniffer/
     - Test/codeSniffer/vendor/bin/phpcs --standard=Test/codeSniffer/phpcs.xml src/
     - composer install
     - vendor/bin/phpunit -c Test/phpunit/phpunit.xml
-
+    - composer install -d Test/behat
+    - php -S localhost:8001 -t web/ > /dev/null &
+    - Test/behat/vendor/bin/behat --config=Test/behat/behat.yml
 notifications:
     on_success: never
     on_failure: always

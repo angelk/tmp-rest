@@ -7,3 +7,4 @@
 /Test/phpunit/codeCoverageLog
 /Test/codeSniffer/vendor
 /Test/messDetecor/vendor
+/Test/behat/vendor

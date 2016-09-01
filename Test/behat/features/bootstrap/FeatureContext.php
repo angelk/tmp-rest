@@ -30,7 +30,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function imOnNewsIndexPage()
     {
-        $this->session->visit('http://10.0.3.70:8001/');
+        $this->session->visit('http://localhost:8001/');
     }
     
     /**

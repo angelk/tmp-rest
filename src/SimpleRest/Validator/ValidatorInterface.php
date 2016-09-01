@@ -3,8 +3,8 @@
 namespace SimpleRest\Validator;
 
 /**
- *
- * @author potaka
+ * All validatirs should implement this interface
+ * @author po_taka
  */
 interface ValidatorInterface
 {

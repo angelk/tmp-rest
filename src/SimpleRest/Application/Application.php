@@ -4,6 +4,7 @@ namespace SimpleRest\Application;
 
 use SimpleRest\Http\Response;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * Application
@@ -12,7 +13,11 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Application
 {
-    public function run($request)
+    /**
+     * Run application
+     * @param RequestInterface $request
+     */
+    public function run(RequestInterface $request)
     {
         try {
             $this->initErrorHandler();
@@ -67,6 +72,10 @@ class Application
         }
     }
     
+    /**
+     * Send response to the client
+     * @param ResponseInterface $response
+     */
     protected function sendResponse(ResponseInterface $response)
     {
         http_response_code($response->getStatusCode());
@@ -77,13 +86,19 @@ class Application
         echo $response->getBody();
     }
     
-    
+    /**
+     * Init and register error handler
+     */
     public function initErrorHandler()
     {
         $handler = new \SimpleRest\Error\ErrorHandler();
         $handler->register();
     }
     
+    /**
+     * init PDO
+     * @return \PDO
+     */
     public function initDb()
     {
         $dbSettings = require __DIR__ . '/../../../config/db.php';

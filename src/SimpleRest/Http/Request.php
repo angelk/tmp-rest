@@ -5,7 +5,7 @@ namespace SimpleRest\Http;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Request
+ * Request implentation based on PSR7
  *
  * @author po_taka <angel.koilov@gmail.com>
  */

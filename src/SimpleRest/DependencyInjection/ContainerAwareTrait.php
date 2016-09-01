@@ -16,16 +16,27 @@ trait ContainerAwareTrait
      */
     private $container;
     
+    /**
+     * @inheritdoc
+     */
     public function getContainer()
     {
         return $this->container;
     }
     
+    /**
+     * @inheritdoc
+     */
     public function setContainer(Container $container)
     {
         $this->container = $container;
     }
     
+    /**
+     * Shortcut form container->get
+     * @param string $key
+     * @return mixed
+     */
     protected function get($key)
     {
         return $this->container->get($key);

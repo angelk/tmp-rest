@@ -3,7 +3,8 @@
 namespace SimpleRest\Exception;
 
 /**
- * Exception
+ * All application specific exception should
+ * extend this one
  *
  * @author po_taka <angel.koilov@gmail.com>
  */

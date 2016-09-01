@@ -16,6 +16,10 @@ class NewsController implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
     
+    /**
+     * Handle news listing
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function indexAction()
     {
         $query = $this->get('newsQuery');
@@ -37,6 +41,11 @@ class NewsController implements ContainerAwareInterface
         );
     }
     
+    /**
+     * Handle `get` action for news
+     * @param int $id
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function getAction($id)
     {
         $query = $this->get('newsQuery');
@@ -46,6 +55,11 @@ class NewsController implements ContainerAwareInterface
         return $this->createResponseJson($news->toArray());
     }
     
+    /**
+     * Handle `put action for news
+     * @param int $id
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function putAction($id)
     {
         $request = $this->get('request');
@@ -62,17 +76,24 @@ class NewsController implements ContainerAwareInterface
         try {
             $query->save($news, $this->get('newsValidator'));
         } catch (\SimpleRest\Validator\ValidationException $e) {
-            return $this->createResponseJson(
+            $response = $this->createResponseJson(
                 [
                     'status' => 'fail',
                     'errors' => $e->getErrors(),
                 ]
             );
+            
+            $response->setStatusCode(422);
+            return $response;
         }
         
         return $this->createResponseJson(['status' => 'ok']);
     }
     
+    /**
+     * Handle `post` action
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function postAction()
     {
         $request = $this->get('request');
@@ -89,12 +110,15 @@ class NewsController implements ContainerAwareInterface
         try {
             $query->save($news, $this->get('newsValidator'));
         } catch (\SimpleRest\Validator\ValidationException $e) {
-            return $this->createResponseJson(
+            $response = $this->createResponseJson(
                 [
                     'status' => 'fail',
                     'errors' => $e->getErrors(),
                 ]
             );
+            
+            $response->setStatusCode(422);
+            return $response;
         }
         
         return $this->createResponseJson(
@@ -105,6 +129,11 @@ class NewsController implements ContainerAwareInterface
         );
     }
     
+    /**
+     * Handle `delete` action
+     * @param int $id
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function deleteAction($id)
     {
         $query = $this->get('newsQuery');

@@ -10,6 +10,9 @@ use SimpleRest\DependencyInjection\Container;
  */
 interface ContainerAwareInterface
 {
+    /**
+     * @return Container
+     */
     public function getContainer();
     public function setContainer(Container $container);
 }

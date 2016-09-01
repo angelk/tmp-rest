@@ -9,14 +9,32 @@ namespace SimpleRest\Orm\News;
  */
 class News
 {
+    /**
+     * null when news is not persisted to the db
+     * @var int|null
+     */
     private $id;
+    
+    /**
+     * @var string
+     */
     private $title;
     /**
      * @var \DateTime
      */
     private $date;
+    
+    /**
+     * @var string
+     */
     private $text;
     
+    /**
+     * @param int|null $id
+     * @params tring $title
+     * @param \DateTime $date
+     * @param string $text
+     */
     public function __construct($id, $title, \DateTime $date, $text)
     {
         $this->id = $id;
@@ -39,10 +57,20 @@ class News
     {
         return $this->title;
     }
+    
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
 
     public function getDate()
     {
         return $this->date;
+    }
+    
+    public function setDate(\DateTime $date)
+    {
+        $this->date = $date;
     }
 
     public function getText()
@@ -50,6 +78,15 @@ class News
         return $this->text;
     }
     
+    public function setText($text)
+    {
+        $this->text = $text;
+    }
+
+    /**
+     * Export news to array
+     * @return array
+     */
     public function toArray()
     {
         return [

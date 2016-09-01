@@ -5,7 +5,7 @@ namespace SimpleRest\Http\Message;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Stream
+ * Stream implementation of PSR7
  *
  * @author po_taka <angel.koilov@gmail.com>
  */

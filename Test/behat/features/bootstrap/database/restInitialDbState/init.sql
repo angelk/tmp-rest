@@ -13,3 +13,6 @@ ALTER TABLE `news`
 --
 ALTER TABLE `news`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+INSERT INTO `news` (`id`, `title`, `date`, `text`) VALUES
+(1, 'title 1', '2016-08-31', 'testText');

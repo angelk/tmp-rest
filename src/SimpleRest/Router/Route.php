@@ -9,12 +9,39 @@ namespace SimpleRest\Router;
  */
 class Route
 {
+    /**
+     * @var string
+     */
     private $path;
+    
+    /**
+     * @var string
+     */
     private $controller;
+    
+    /**
+     * @var string
+     */
     private $action;
+    
+    /**
+     * @var string
+     */
     private $method;
 
-
+    /**
+     * path ~/^someRoute~ will match only /someRoute
+     *
+     * path ~/^.*~ will match /{anything}
+     *
+     * path ~/^([0-9]+)~ will match /{number}
+     * and {number} will be passed to the controller
+     *
+     * @param string $path Regexp expression for route match
+     * @param string $controller Controller class
+     * @param string $action HTTP request type
+     * @param string $method Method to call from controller
+     */
     public function __construct($path, $controller, $action, $method)
     {
         $this->path = $path;

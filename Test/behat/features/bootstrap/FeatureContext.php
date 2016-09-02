@@ -11,6 +11,11 @@ class FeatureContext implements Context, SnippetAcceptingContext
     private $session;
     
     /**
+     * @var GuzzleHttp\Psr7\Response|null
+     */
+    private $lastPostResponse;
+    
+    /**
      * Initializes context.
      *
      * Every scenario gets its own context instance.
@@ -23,12 +28,18 @@ class FeatureContext implements Context, SnippetAcceptingContext
         $this->session = new \Behat\Mink\Session($driver);
     }
     
+    protected function getApiBaseUrl()
+    {
+        return 'http://localhost:8001/';
+    }
+
+
     /**
      * @When I'm on news index page
      */
     public function imOnNewsIndexPage()
     {
-        $this->session->visit('http://localhost:8001/');
+        $this->session->visit($this->getApiBaseUrl());
     }
     
     /**
@@ -56,6 +67,43 @@ class FeatureContext implements Context, SnippetAcceptingContext
         // get 1st news and test if all fields are filled
         $news = $pageData['items'][0];
         $this->assertGivenArrayIsNews($news);
+    }
+    
+    /**
+     * @When I post data for news
+     */
+    public function postDataNews()
+    {
+        $guzzle = new \GuzzleHttp\Client();
+        $response = $guzzle->post(
+            $this->getApiBaseUrl(),
+            [
+                'body' => json_encode(
+                    [
+                        'title' => 'test title',
+                        "date" => "2018-06-06",
+                        "text" => "test text",
+                    ]
+                ),
+            ]
+        );
+        
+        $this->lastPostResponse = $response;
+    }
+    
+    /**
+     * @Then I should see that data is saved successful
+     */
+    public function iShouldSeeThatDataIsSavedSuccessful()
+    {
+        $response = $this->lastPostResponse;
+        // if response code is != 200, then guzzle
+        // will throw exception. No checks for response
+        $this->assertIsJson($response->getBody());
+        $responseArray = json_decode($response->getBody(), true);
+        if (!isset($responseArray['status']) | $responseArray['status'] !== 'ok') {
+            throw new \Excetpion("expectes status `ok` from post api");
+        }
     }
     
     protected function assertIsJson($data)

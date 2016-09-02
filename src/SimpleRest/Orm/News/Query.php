@@ -4,6 +4,7 @@ namespace SimpleRest\Orm\News;
 
 use PDO;
 use SimpleRest\Validator\ValidatorInterface;
+use SimpleRest\Orm\Exception\QueryException;
 
 /**
  * Query
@@ -200,6 +201,7 @@ class Query
     /**
      * Delete news with given id
      * @param int $id
+     * @throws QueryException
      */
     public function delete($id)
     {
@@ -213,8 +215,7 @@ class Query
         $stm->bindValue('id', $id, \PDO::PARAM_INT);
         $stm->execute();
         if ($stm->rowCount() !== 1) {
-            // @TODO throw specific exp
-            throw new \SimpleRest\Exception\Exception("Item not found");
+            throw new QueryException("Item not found");
         }
     }
 }

@@ -10,7 +10,7 @@ CREATE TABLE `news` (
 ALTER TABLE `news`
   ADD PRIMARY KEY (`id`);
 
---
+
 ALTER TABLE `news`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 

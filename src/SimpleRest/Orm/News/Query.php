@@ -114,7 +114,7 @@ class Query
     {
         $stm = $this->pdo->prepare("
             SELECT
-                *
+                po_" . implode(', ', $this->fields) . "
             FROM
                 " . static::TABLE . "
             WHERE

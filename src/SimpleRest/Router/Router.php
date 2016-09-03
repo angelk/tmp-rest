@@ -11,6 +11,10 @@ class Router
      */
     private $routes;
     
+    /**
+     * Add multiple rules
+     * @param Route[]|Array $routes
+     */
     public function addRoutes(array $routes)
     {
         foreach ($routes as $route) {
@@ -66,7 +70,7 @@ class Router
             }
         }
         
-        // @TOOD change to route exception
+        // could throw route specific exception
         throw new \SimpleRest\Exception\Exception("'{$requiredPath}' have no maching route");
     }
 }

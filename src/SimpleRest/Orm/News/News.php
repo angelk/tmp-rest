@@ -63,11 +63,17 @@ class News
         $this->title = $title;
     }
 
+    /**
+     * @return \DateTime
+     */
     public function getDate()
     {
         return $this->date;
     }
     
+    /**
+     * @param \DateTime $date
+     */
     public function setDate(\DateTime $date)
     {
         $this->date = $date;

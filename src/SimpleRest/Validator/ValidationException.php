@@ -14,13 +14,25 @@ use SimpleRest\Exception\Exception;
  */
 class ValidationException extends Exception
 {
+    /**
+     * Kepp validation errors
+     * @var array
+     */
     private $errors = [];
     
+    /**
+     * Get validation errors
+     * @return array
+     */
     public function getErrors()
     {
         return $this->errors;
     }
 
+    /**
+     * Set validation errors
+     * @param array $errors
+     */
     public function setErrors(array $errors)
     {
         $this->errors = $errors;

@@ -16,6 +16,12 @@ class Request implements ServerRequestInterface
     private $server;
     private $content;
     
+    /**
+     * @param array $query
+     * @param array $request
+     * @param array $server
+     * @param string $content
+     */
     public function __construct(array $query = [], array $request = [], array $server = [], $content = null)
     {
         $this->query = $query;

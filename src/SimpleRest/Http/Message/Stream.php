@@ -11,14 +11,21 @@ use Psr\Http\Message\StreamInterface;
  */
 class Stream implements StreamInterface
 {
+    /**
+     * strem data
+     * @var string
+     */
     private $data;
     
+    /**
+     * Stream data
+     * @param string $data
+     */
     public function __construct($data)
     {
         $this->data = $data;
     }
 
-    
     public function __toString()
     {
         return $this->data;
